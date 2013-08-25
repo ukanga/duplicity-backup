@@ -83,3 +83,7 @@ elif [[ "$1" = "restore" && "$2" = "mongo" ]]; then
 else
     echo "duplicity_backup - Encrypted incremental backup to local or remote storage, mongo n mysql"
 fi
+
+unset AWS_ACCESS_KEY_ID
+unset AWS_SECRET_ACCESS_KEY
+unset PASSPHRASE
