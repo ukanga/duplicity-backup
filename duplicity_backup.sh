@@ -15,9 +15,15 @@ MONGO_BACKUP_TARGET=
 RESTORE_MONGO_BACKUP=
 RESTORE_MYSQL_BACKUP=
 
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+
 if [ -r ~/.backup_config ]; then
     source ~/.backup_config
 fi
+
+export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 
 mysql_backup()
 {
@@ -31,12 +37,12 @@ cleanup_mysql()
 
 mysql_duplicity_backup()
 {
-    duplicity --full-if-older-than 7D --encrypt-key $ENCRYPT_KEY $MYSQL_BACKUP_SOURCE $MYSQL_BACKUP_TARGET
+    duplicity --s3-use-new-style --full-if-older-than 7D --encrypt-key $ENCRYPT_KEY $MYSQL_BACKUP_SOURCE $MYSQL_BACKUP_TARGET
 }
 
 restore_mysql()
 {
-    duplicity restore --hidden-encrypt-key $ENCRYPT_KEY $MYSQL_BACKUP_TARGET $RESTORE_MYSQL_BACKUP
+    duplicity restore --s3-use-new-style --hidden-encrypt-key $ENCRYPT_KEY $MYSQL_BACKUP_TARGET $RESTORE_MYSQL_BACKUP
 }
 
 mongo_backup()
@@ -51,12 +57,12 @@ cleanup_mongo()
 
 mongo_duplicity_backup()
 {
-    duplicity --full-if-older-than 7D --encrypt-key $ENCRYPT_KEY $MONGO_DUMP $MONGO_BACKUP_TARGET
+    duplicity --s3-use-new-style --full-if-older-than 7D --encrypt-key $ENCRYPT_KEY $MONGO_DUMP $MONGO_BACKUP_TARGET
 }
 
 restore_mongo()
 {
-    duplicity restore --hidden-encrypt-key $ENCRYPT_KEY $MONGO_BACKUP_TARGET $RESTORE_MONGO_BACKUP
+    duplicity restore --s3-use-new-style --hidden-encrypt-key $ENCRYPT_KEY $MONGO_BACKUP_TARGET $RESTORE_MONGO_BACKUP
 }
 
 if [ "$1" = "mysql" ]; then
