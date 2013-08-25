@@ -20,6 +20,8 @@ RESTORE_MYSQL_BACKUP=
 AWS_ACCESS_KEY_ID=
 AWS_SECRET_ACCESS_KEY=
 
+DUP_LOG=/var/run/duplicity.log
+
 if [ -r ~/.backup_config ]; then
     source ~/.backup_config
 fi
@@ -40,7 +42,7 @@ cleanup_mysql()
 
 mysql_duplicity_backup()
 {
-    duplicity --s3-use-new-style --full-if-older-than 7D --encrypt-key $ENCRYPT_KEY $MYSQL_BACKUP_SOURCE $MYSQL_BACKUP_TARGET
+    duplicity --s3-use-new-style --full-if-older-than 7D ---log-file $DUP_LOG -encrypt-key $ENCRYPT_KEY $MYSQL_BACKUP_SOURCE $MYSQL_BACKUP_TARGET
 }
 
 restore_mysql()
@@ -60,7 +62,7 @@ cleanup_mongo()
 
 mongo_duplicity_backup()
 {
-    duplicity --s3-use-new-style --full-if-older-than 7D --encrypt-key $ENCRYPT_KEY $MONGO_DUMP $MONGO_BACKUP_TARGET
+    duplicity --s3-use-new-style --full-if-older-than 7D --log-file $DUP_LOG --encrypt-key $ENCRYPT_KEY $MONGO_DUMP $MONGO_BACKUP_TARGET
 }
 
 restore_mongo()
