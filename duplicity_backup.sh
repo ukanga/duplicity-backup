@@ -100,8 +100,14 @@ elif [ "$1" = "folder" ]; then
         echo "./duplicity_backup folder /path/to/backup s3:///path/of/where/to/backup"
     fi
 elif [[ "$1" = "restore" && "$2" = "mysql" ]]; then
+    if [ $# -gt 2 ]; then
+        RESTORE_MYSQL_BACKUP=$3
+    fi
     restore_mysql
 elif [[ "$1" = "restore" && "$2" = "mongo" ]]; then
+    if [ $# -gt 2 ]; then
+        RESTORE_MONGO_BACKUP=$3
+    fi
     restore_mongo
 elif [[ "$1" = "restore" && "$2" = "folder" ]]; then
     if [ $# -gt 3 ]; then
