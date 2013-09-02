@@ -70,6 +70,11 @@ restore_mongo()
     duplicity restore --s3-use-new-style --hidden-encrypt-key $ENCRYPT_KEY $MONGO_BACKUP_TARGET $RESTORE_MONGO_BACKUP
 }
 
+folder_backup()
+{
+    duplicity --s3-use-new-style --log-file $DUP_LOG --encrypt-key $ENCRYPT_KEY $FOLDER_TO_BACKUP $FOLDER_BACKUP_TARGET
+}
+
 if [ "$1" = "mysql" ]; then
     mysql_backup
     mysql_duplicity_backup
@@ -78,6 +83,17 @@ elif [ "$1" = "mongo" ]; then
     mongo_backup
     mongo_duplicity_backup
     cleanup_mongo
+elif [ "$1" = "folder" ]; then
+    if [ $# -gt 2 ]; then
+        FOLDER_TO_BACKUP=$2
+        FOLDER_BACKUP_TARGET=$3
+        folder_backup
+    else
+        echo "Expecting:"
+        echo "./duplicity_backup folder /path/to/backup file:///path/of/where/to/backup"
+        echo "or"
+        echo "./duplicity_backup folder /path/to/backup s3:///path/of/where/to/backup"
+    fi
 elif [[ "$1" = "restore" && "$2" = "mysql" ]]; then
     restore_mysql
 elif [[ "$1" = "restore" && "$2" = "mongo" ]]; then
