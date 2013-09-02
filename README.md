@@ -1,6 +1,6 @@
 Using duplicity - Encrypted incremental backup to local or remote storage.
 
-### Install duplicity and Dependecies
+### Install duplicity and Dependencies
 
 Ubuntu
 
