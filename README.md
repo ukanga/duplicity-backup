@@ -69,8 +69,8 @@ NOTE: you have to restore the actual database after this, if that is your intent
 
 `Mysql`:
 
-    `mysql -u USERNAME -p DB_NAME < /path/to/restore/folder/DB_NAME.sql`
+    mysql -u USERNAME -p DB_NAME < /path/to/restore/folder/DB_NAME.sql
 
 `Mongo`:
 
-    `mongorestore /path/to/restore/folder`
+    mongorestore /path/to/restore/folder
