@@ -75,6 +75,11 @@ folder_backup()
     duplicity --s3-use-new-style --log-file $DUP_LOG --encrypt-key $ENCRYPT_KEY $FOLDER_TO_BACKUP $FOLDER_BACKUP_TARGET
 }
 
+restore_folder()
+{
+    duplicity restore --s3-use-new-style --hidden-encrypt-key $ENCRYPT_KEY $FOLDER_TO_RESTORE $FOLDER_RESTORE_TARGET
+}
+
 if [ "$1" = "mysql" ]; then
     mysql_backup
     mysql_duplicity_backup
@@ -98,6 +103,14 @@ elif [[ "$1" = "restore" && "$2" = "mysql" ]]; then
     restore_mysql
 elif [[ "$1" = "restore" && "$2" = "mongo" ]]; then
     restore_mongo
+elif [[ "$1" = "restore" && "$2" = "folder" ]]; then
+    if [ $# -gt 3 ]; then
+        FOLDER_TO_RESTORE=$3
+        FOLDER_RESTORE_TARGET=$4
+        restore_folder
+    else
+        echo "./duplicity_backup restore folder file:///path/of/backup /path/of/where/to/restore"
+    fi
 else
     echo "duplicity_backup - Encrypted incremental backup to local or remote storage, mongo n mysql"
 fi
