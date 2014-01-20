@@ -5,6 +5,7 @@ Using duplicity - Encrypted incremental backup to local or remote storage.
 Required: duplicity >=0.6.21
 
 Ubuntu 12.04
+
     # su - -c "echo 'deb http://ppa.launchpad.net/duplicity-team/ppa/ubuntu precise main' | tee /etc/apt/sources.list.d/duplicity.list"
     # apt-key adv --keyserver hkp://keyserver.ubuntu.com:80  --recv AF953139C1DF9EF3476DE1D58F571BB27A86F4A2
     # apt-get update
