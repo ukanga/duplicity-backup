@@ -61,6 +61,7 @@ duplicity to encrypt and decrypt the backups.
 #### backup
 
     duplicity_backup mysql
+    duplicity_backup postgres
     duplicity_backup mongo
     duplicity_backup folder /path/to/target/folder file:///path/to/backup/target
     duplicity_backup folder /path/to/target/folder s3://BUCKET/target
@@ -68,6 +69,7 @@ duplicity to encrypt and decrypt the backups.
 #### restore
 
     duplicity_backup restore mysql /path/to/restore/folder
+    duplicity_backup restore postgres /path/to/restore/folder
     duplicity_backup restore mongo /path/to/restore/folder
     duplicity_backup restore folder file:///path/to/backup/target /path/to/restore/target
     duplicity_backup restore folder s3://BUCKET/target /path/to/restore/target
