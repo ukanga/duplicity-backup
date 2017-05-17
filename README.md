@@ -23,6 +23,11 @@ If you are going to use Amazon S3 storage install boto
     # apt-get install python-pip
     # pip install boto
 
+You'll need the [couchdb-dump](https://www.npmjs.com/package/couchdb-dump) NPM module inorder to backup CouchDB databases
+
+    # apt-get install nodejs-legacy npm
+    # npm install -g couchdb-dump
+
 ### Setup Encryption
 
 Generate the key
@@ -64,6 +69,7 @@ duplicity to encrypt and decrypt the backups.
     duplicity_backup mysql
     duplicity_backup postgres
     duplicity_backup mongo
+    duplicity_backup couchdb
     duplicity_backup folder /path/to/target/folder file:///path/to/backup/target
     duplicity_backup folder /path/to/target/folder s3://BUCKET/target
 
@@ -72,6 +78,7 @@ duplicity to encrypt and decrypt the backups.
     duplicity_backup restore mysql /path/to/restore/folder
     duplicity_backup restore postgres /path/to/restore/folder
     duplicity_backup restore mongo /path/to/restore/folder
+    duplicity_backup restore couchdb /path/to/restore/folder
     duplicity_backup restore folder file:///path/to/backup/target /path/to/restore/target
     duplicity_backup restore folder s3://BUCKET/target /path/to/restore/target
 
@@ -84,3 +91,8 @@ NOTE: you have to restore the actual database after this, if that is your intent
 `Mongo`:
 
     mongorestore /path/to/restore/folder
+
+`CouchDB`:
+
+    gunzip /path/to/restored/file
+    cdbload -d database_to_restore < /path/to/extracted/json
