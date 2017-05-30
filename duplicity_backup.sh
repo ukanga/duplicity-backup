@@ -8,6 +8,13 @@ MYSQL_BACKUP=
 MYSQL_BACKUP_SOURCE=
 MYSQL_BACKUP_TARGET=
 
+COUCHDB_USER=
+COUCHDB_PASS=
+COUCHDB_DB=
+COUCHDB_BACKUP=
+COUCHDB_BACKUP_SOURCE=
+COUCHDB_BACKUP_TARGET=
+
 MONGO_DUMP=
 MONGO_BACKUP_TARGET=
 RESTORE_MONGO_BACKUP=
@@ -15,7 +22,7 @@ RESTORE_MYSQL_BACKUP=
 
 POSTGRES_USER=
 POSTGRES_DB=
-POSTGReS_HOST=
+POSTGRES_HOST=
 POSTGRES_BACKUP_FOLDER=
 POSTGRES_BACKUP_TARGET=
 
@@ -98,6 +105,47 @@ restore_mysql()
     duplicity restore --s3-use-new-style --hidden-encrypt-key $ENCRYPT_KEY $MYSQL_BACKUP_TARGET $RESTORE_MYSQL_BACKUP
 }
 
+couchdb_backup()
+{
+    if [[ -z "$COUCHDB_USER" || -z "$COUCHDB_PASS" || -z "$COUCHDB_DB" || -z "$COUCHDB_BACKUP_SOURCE" || -z "$COUCHDB_BACKUP" ]]; then
+        echo "COUCHDB_USER, COUCHDB_PASS, COUCHDB_DB, COUCHDB_BACKUP_SOURCE, and COUCHDB_BACKUP variables need to be set in ~/.backup_config"
+        exit
+    fi
+    mkdir -p $COUCHDB_BACKUP_SOURCE
+    cdbdump -u $COUCHDB_USER -p $COUCHDB_PASS -d $COUCHDB_DB | gzip > $COUCHDB_BACKUP_SOURCE/$COUCHDB_BACKUP
+}
+
+cleanup_couchdb()
+{
+    if [[ -z "$COUCHDB_BACKUP_SOURCE" || -z "$COUCHDB_BACKUP" ]]; then
+        echo "COUCHDB_BACKUP_SOURCE, and COUCHDB_BACKUP variables need to be set in ~/.backup_config"
+        exit
+    fi
+    rm $COUCHDB_BACKUP_SOURCE/$COUCHDB_BACKUP
+}
+
+couchdb_duplicity_backup()
+{
+    if [[ -z "$COUCHDB_BACKUP_SOURCE" || -z "$COUCHDB_BACKUP_TARGET" ]]; then
+        echo "COUCHDB_BACKUP_SOURCE, and COUCHDB_BACKUP_TARGET variables need to be set in ~/.backup_config"
+        exit
+    fi
+    duplicity --s3-use-new-style --full-if-older-than 7D --log-file $DUP_LOG --encrypt-key $ENCRYPT_KEY $COUCHDB_BACKUP_SOURCE $COUCHDB_BACKUP_TARGET
+}
+
+restore_couchdb()
+{
+    if [[ -z "$COUCHDB_BACKUP_SOURCE" ]]; then
+        echo "COUCHDB_BACKUP_SOURCE variable needs to be set in ~/.backup_config"
+        exit
+    fi
+    if [ -z "$RESTORE_COUCHDB_BACKUP" ]; then
+        RESTORE_COUCHDB_BACKUP=$COUCHDB_BACKUP_SOURCE
+    fi
+    mkdir -p $RESTORE_COUCHDB_BACKUP
+    duplicity restore --s3-use-new-style --hidden-encrypt-key $ENCRYPT_KEY $COUCHDB_BACKUP_TARGET $RESTORE_COUCHDB_BACKUP
+}
+
 mongo_backup()
 {
     mongodump --out $MONGO_DUMP
@@ -140,6 +188,10 @@ elif [ "$1" = "mongo" ]; then
     mongo_backup
     mongo_duplicity_backup
     cleanup_mongo
+elif [ "$1" = "couchdb" ]; then
+    couchdb_backup
+    couchdb_duplicity_backup
+    cleanup_couchdb
 elif [ "$1" = "folder" ]; then
     if [ $# -gt 2 ]; then
         FOLDER_TO_BACKUP=$2
@@ -166,6 +218,11 @@ elif [[ "$1" = "restore" && "$2" = "mongo" ]]; then
         RESTORE_MONGO_BACKUP=$3
     fi
     restore_mongo
+elif [[ "$1" = "restore" && "$2" = "couchdb" ]]; then
+    if [ $# -gt 2 ]; then
+        RESTORE_COUCHDB_BACKUP=$3
+    fi
+    restore_couchdb
 elif [[ "$1" = "restore" && "$2" = "folder" ]]; then
     if [ $# -gt 3 ]; then
         FOLDER_TO_RESTORE=$3
